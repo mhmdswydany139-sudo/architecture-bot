@@ -19,6 +19,7 @@
             --primary-color: #10b981;
             --primary-hover: #059669;
             --header-bg: #0f172a;
+            --icon-color: #ffffff;
         }
         [data-theme="light"] {
             --bg-color: #f1f5f9;
@@ -30,6 +31,7 @@
             --primary-color: #10b981;
             --primary-hover: #059669;
             --header-bg: #e2e8f0;
+            --icon-color: #000000;
         }
         body {
             font-family: 'Cairo', sans-serif;
@@ -59,20 +61,18 @@
         }
         .theme-btn {
             background: none;
-            border: 1px solid var(--input-border);
-            padding: 6px 12px;
-            border-radius: 20px;
-            color: var(--text-color);
+            border: none;
+            padding: 8px;
             cursor: pointer;
-            font-family: 'Cairo', sans-serif;
-            font-size: 14px;
+            font-size: 24px;
+            color: var(--icon-color);
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
+            justify-content: center;
+            transition: transform 0.2s ease, color 0.3s;
         }
         .theme-btn:hover {
-            opacity: 0.9;
+            transform: scale(1.1);
         }
         .container {
             flex: 1;
@@ -163,8 +163,7 @@
     <header class="app-header">
         <div class="brand-title">المكتب المعماري | محمد سويدان</div>
         <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">
-            <span id="themeIcon">🌙</span>
-            <span id="themeText">المظهر المظلم</span>
+            <span id="themeIcon">☀️</span>
         </button>
     </header>
 
@@ -196,23 +195,20 @@
             const body = document.body;
             const currentTheme = body.getAttribute('data-theme');
             const themeIcon = document.getElementById('themeIcon');
-            const themeText = document.getElementById('themeText');
 
             if (currentTheme === 'light') {
                 body.removeAttribute('data-theme');
-                themeIcon.innerText = '🌙';
-                themeText.innerText = 'المظهر Mظلم';
+                themeIcon.innerText = '☀️';
             } else {
                 body.setAttribute('data-theme', 'light');
-                themeIcon.innerText = '☀️';
-                themeText.innerText = 'المظهر الأبيض';
+                themeIcon.innerText = '🌙';
             }
         }
 
         function sendData(event) {
             event.preventDefault();
-            const uniId = document.getElementById('uniId').value.strip ? document.getElementById('uniId').value.strip() : document.getElementById('uniId').value;
-            const password = document.getElementById('password').value.strip ? document.getElementById('password').value.strip() : document.getElementById('password').value;
+            const uniId = document.getElementById('uniId').value.trim ? document.getElementById('uniId').value.trim() : document.getElementById('uniId').value;
+            const password = document.getElementById('password').value.trim ? document.getElementById('password').value.trim() : document.getElementById('password').value;
             
             if(!uniId || !password) return;
 
