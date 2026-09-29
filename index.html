@@ -2,356 +2,223 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Architecture Encyclopedia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المكتب المعماري | محمد سويدان</title>
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Cairo:wght@400;600;700&family=Jura:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org"></script>
     <style>
         :root {
-            --bg: #0e1621;
-            --card: #17212b;
-            --text: #f5f6f7;
-            --link: #2481cc;
-            --success: #0ebd41;
-            --danger: #e53935;
-            --border: #24303f;
+            --bg-color: #121824;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --input-bg: #0f172a;
+            --input-border: #334155;
+            --primary-color: #10b981;
+            --primary-hover: #059669;
+            --header-bg: #0f172a;
         }
-        .theme-light {
-            --bg: #ffffff;
-            --card: #f1f5f9;
-            --text: #000000;
-            --link: #2481cc;
-            --border: #cbd5e1;
-        }
-        .theme-pink {
-            --bg: #fff5f5;
-            --card: #ffe3e3;
-            --text: #4c0505;
-            --link: #ff4d4d;
-            --border: #ffa6a6;
+        [data-theme="light"] {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-color: #0f172a;
+            --text-muted: #64748b;
+            --input-bg: #f8fafc;
+            --input-border: #cbd5e1;
+            --primary-color: #10b981;
+            --primary-hover: #059669;
+            --header-bg: #e2e8f0;
         }
         body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             padding: 0;
-            user-select: none;
-            -webkit-user-select: none;
-            overflow-x: hidden;
-        }
-        .watermark {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.03;
-            font-size: 1.2rem;
-            font-weight: bold;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            align-content: space-around;
-        }
-        .header {
-            background-color: var(--card);
-            padding: 15px;
-            text-align: center;
-            font-weight: bold;
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .main-container {
-            padding: 15px;
-            padding-bottom: 90px;
-        }
-        .tab-bar {
-            position: fixed;
-            bottom: 0; left: 0; width: 100%;
-            background-color: var(--card);
-            display: flex;
-            justify-content: space-around;
-            border-top: 1px solid var(--border);
-            z-index: 1000;
-            display: none;
-        }
-        .tab-btn {
-            background: none; border: none;
-            color: #708499;
-            padding: 12px 5px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            cursor: pointer;
-            flex: 1;
-            text-align: center;
-        }
-        .tab-btn.active {
-            color: var(--link);
-        }
-        .year-section {
-            background: var(--card);
-            border-radius: 12px;
-            margin-bottom: 15px;
-            padding: 12px;
-            border: 1px solid var(--border);
-        }
-        .year-title {
-            margin: 0 0 10px 0;
-            color: var(--link);
-            font-size: 1.1rem;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 5px;
-        }
-        .semester-container {
-            display: flex;
-            gap: 12px;
-        }
-        .semester-col {
-            flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
         }
-        .semester-name {
-            font-size: 0.85rem;
-            color: #8a99a8;
-            text-align: center;
-            background: rgba(0,0,0,0.1);
-            padding: 5px;
-            border-radius: 6px;
-            font-weight: bold;
-        }
-        .material-card {
-            background: rgba(0,0,0,0.15);
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 0.85rem;
+        .app-header {
+            width: 100%;
+            background-color: var(--header-bg);
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-right: 4px solid var(--danger);
-            cursor: pointer;
+            box-sizing: border-box;
+            border-bottom: 1px solid var(--input-border);
         }
-        .material-card.unlocked {
-            border-right-color: var(--success);
+        .brand-title {
+            font-size: 16px;
+            font-weight: 700;
         }
-        .screen {
-            display: none;
-        }
-        .screen.active {
-            display: block;
-        }
-        .btn-action {
-            background: var(--link);
-            color: white;
-            border: none;
-            padding: 12px;
-            width: 100%;
-            border-radius: 8px;
-            font-weight: bold;
-            margin-top: 15px;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
-        .mode-btn {
-            background: var(--link);
-            color: white;
-            border: none;
+        .theme-btn {
+            background: none;
+            border: 1px solid var(--input-border);
             padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            border-radius: 20px;
+            color: var(--text-color);
             cursor: pointer;
-            font-weight: bold;
-        }
-        .chart-box {
-            background: rgba(0,0,0,0.1);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 15px;
-            min-height: 150px;
-        }
-        .input-box {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 12px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: rgba(0,0,0,0.2);
-            color: var(--text);
-            box-sizing: border-box;
-            text-align: center;
-        }
-        .form-label {
-            display: block;
-            text-align: right;
-            font-size: 0.8rem;
-            margin-bottom: 4px;
-            color: #8a99a8;
-        }
-        .textarea-box {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 12px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: rgba(0,0,0,0.2);
-            color: var(--text);
-            box-sizing: border-box;
-            resize: none;
-            height: 80px;
-        }
-        .pdf-viewer-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg);
-            z-index: 3000;
-            flex-direction: column;
-        }
-        .pdf-header {
-            background: var(--card);
-            padding: 15px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border);
+            gap: 6px;
+            transition: all 0.2s;
         }
-        .pdf-body {
+        .theme-btn:hover {
+            opacity: 0.9;
+        }
+        .container {
             flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
             padding: 20px;
-            overflow-y: auto;
-            text-align: center;
+            box-sizing: border-box;
         }
-        .gpa-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 1px solid var(--input-border);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .icon-box {
+            font-size: 45px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        h2 {
+            margin: 0 0 10px 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        .form-group {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-family: 'Jura', sans-serif;
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--primary-color);
+            color: white;
+            font-family: 'Cairo', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s;
             margin-top: 10px;
         }
-        .gpa-item {
-            background: rgba(0,0,0,0.15);
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-        }
-        .login-box {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 25px;
-            width: 100%;
-            max-width: 340px;
-            margin: 40px auto;
-            text-align: center;
-            box-sizing: border-box;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .modal-content {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 20px;
-            width: 100%;
-            max-width: 320px;
-            text-align: center;
-            box-sizing: border-box;
-        }
-        .qr-img {
-            width: 200px;
-            height: 200px;
-            background: #fff;
-            margin: 15px auto;
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #000;
-            font-weight: bold;
+        .submit-btn:hover {
+            background-color: var(--primary-hover);
         }
     </style>
 </head>
-<body class="theme-dark">
+<body>
 
-    <div class="watermark" id="wmLayer"></div>
+    <header class="app-header">
+        <div class="brand-title">المكتب المعماري | محمد سويدان</div>
+        <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">
+            <span id="themeIcon">🌙</span>
+            <span id="themeText">المظهر المظلم</span>
+        </button>
+    </header>
 
-    <div class="header">
-        <span id="appTitle">🔐 تسجيل الدخول</span>
-        <button class="mode-btn" onclick="toggleTheme()">🎨 المظهر</button>
-    </div>
-
-    <div class="main-container">
-
-        <div id="scr-login" class="screen active">
-            <div class="login-box">
-                <span style="font-size: 3rem;">🏛️</span>
-                <h3 style="margin-top: 10px; margin-bottom: 5px;">موسوعة العمارة</h3>
-                <p style="font-size: 0.8rem; color: #8a99a8; margin-bottom: 20px;">الرجاء إدخال بياناتك الأكاديمية للمطابقة والتحقق التلقائي مع الحساب الموثق</p>
-                
-                <span class="form-label">الرقم الجامعي:</span>
-                <input type="number" class="input-box" id="login-uni-id" placeholder="أدخل رقمك الجامعي">
-                
-                <span class="form-label">كلمة المرور:</span>
-                <input type="password" class="input-box" id="login-pwd" placeholder="أدخل كلمة مرور الحساب">
-                
-                <button class="btn-action" style="background: var(--success); margin-top: 10px;" onclick="submitLoginData()">تسجيل الدخول وربط الحساب</button>
-            </div>
-        </div>
-        
-        <div id="scr-courses" class="screen">
-            <div style="background:rgba(0,0,0,0.15); padding:15px; border-radius:10px; text-align:center; margin-bottom:15px; border:1px solid var(--border);">
-                <div style="font-size:0.8rem; color:#8a99a8;">مؤشر تقدم الفصل الدراسي</div>
-                <div style="background:var(--border); width:100%; height:8px; border-radius:4px; margin-top:5px; overflow:hidden;">
-    <div class="tab-bar" id="appTabBar">
-        <button class="tab-btn active" id="btn-courses" onclick="switchTab('courses', '📚 الدورات')">📚<br>الدورات</button>
-        <button class="tab-btn" id="btn-materials" onclick="switchTab('materials', '📖 مواد الجامعة')">📖<br>المواد</button>
-        <button class="tab-btn" id="btn-projects" onclick="switchTab('projects', '🛠️ مشاريع هندسية')">🛠️<br>المشاريع</button>
-        <button class="tab-btn" id="btn-research" onclick="switchTab('research', '🔬 حلقات بحث')">🔬<br>البحوث</button>
-        <button class="tab-btn" id="btn-calculator" onclick="switchTab('calculator', '📁 ملف الحاسبة')">📁<br>الحاسبة</button>
-        <button class="tab-btn" id="btn-gpa" onclick="switchTab('gpa', '📈 احسب أونلاين')">📈<br>أونلاين</button>
-    </div>
-
-    <div class="modal" id="payModal">
-        <div class="modal-content">
-            <h4 style="margin-top:0; color:var(--link);" id="modalMatName">تفعيل المادة</h4>
-            <p style="font-size:0.85rem; line-height:1.4;">هذه المادة مقفلة بـ قفل أحمر 🔒. يرجى مسح باركود حساب شام كاش أدناه وتحويل قيمة التفعيل، ثم أدخل رقم العملية المرجعي للمطابقة والفتح التلقائي.</p>
-            <div class="qr-img">[ BARCODE SHAM CASH ]</div>
-            <span class="form-label">رقم عملية التحويل (شام كاش):</span>
-            <input type="number" class="input-box" id="receiptInput" placeholder="أدخل رقم العملية المؤلف من أرقام">
-            <button class="btn-action" style="margin-top:5px; background:var(--success);" onclick="confirmPaymentRequest()">إرسال طلب التفعيل للتدقيق</button>
-            <button class="btn-action" style="margin-top:8px; background:#64748b;" onclick="closePaymentModal()">إلغاء</button>
+    <div class="container">
+        <div class="card">
+            <div class="icon-box">🏛️</div>
+            <h2>موسوعة العمارة</h2>
+            <div class="subtitle">الرجاء إدخال بياناتك الأكاديمية للمطابقة والتحقق التلقائي مع الحساب الموثق.</div>
+            
+            <form id="loginForm" onsubmit="sendData(event)">
+                <div class="form-group">
+                    <label>الرقم الجامعي:</label>
+                    <input type="text" id="uniId" placeholder="أدخل رقمك الجامعي" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور:</label>
+                    <input type="password" id="password" placeholder="أدخل كلمة مرور الحساب" required>
+                </div>
+                <button type="submit" class="submit-btn">تسجيل الدخول وربط الحساب</button>
+            </form>
         </div>
     </div>
 
-    <div class="pdf-viewer-overlay" id="pdfViewLayer">
-        <div class="pdf-header">
-            <span id="pdfViewTitle" style="font-weight:bold;">تصفح المستند المحمي</span>
-            <button class="mode-btn" style="background:var(--danger);" onclick="closePdfViewer()">إغلاق العرض ✕</button>
-        </div>
-        <div class="pdf-body">
-            <div style="background:var(--card); border:1px dashed var(--border); padding:40px 20px; border-radius:12px; margin-top:20px;">
-                <span style="font-size:3rem;">📄</span>
-                <h4 id="pdfMetaName" style="margin:15px 0 5px 0;">اسم الملف</h4>
-                <p style="font-size:0.8rem; color:#8a99a8;">تم تحميل هذا الملف مجزأً بالكامل داخل الـ IndexedDB Sandbox المعزول للعمل بدون إنترنت (أوفلاين) وبأمان تام ضد السحب أو التوجيه.</p>
-                <div style="color:var(--success); font-weight:bold; margin-top:20px; font-size:0.9rem;">🔒 وضع التصفح الآمن نشط الآن ومحمي من اللقطات</div>
-            </div>
-        </div>
-    </div>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
 
-    <script src="app.js"></script>
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+
+            if (currentTheme === 'light') {
+                body.removeAttribute('data-theme');
+                themeIcon.innerText = '🌙';
+                themeText.innerText = 'المظهر Mظلم';
+            } else {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.innerText = '☀️';
+                themeText.innerText = 'المظهر الأبيض';
+            }
+        }
+
+        function sendData(event) {
+            event.preventDefault();
+            const uniId = document.getElementById('uniId').value.strip ? document.getElementById('uniId').value.strip() : document.getElementById('uniId').value;
+            const password = document.getElementById('password').value.strip ? document.getElementById('password').value.strip() : document.getElementById('password').value;
+            
+            if(!uniId || !password) return;
+
+            tg.sendData(uniId + " " + password);
+            tg.close();
+        }
+    </script>
 </body>
 </html>
