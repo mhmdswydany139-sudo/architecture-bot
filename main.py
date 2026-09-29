@@ -14,6 +14,14 @@ app = Flask(__name__)
 
 pending_receipts = set()
 
+@app.route('/')
+def home():
+    try:
+        with open("index.html", "r", encoding="utf-8") as f:
+            return f.read()
+    except:
+        return "الموقع يعمل بنجاح ولكن ملف index.html غير موجود بجانب البوت!"
+
 @app.route('/' + TOKEN_STUDENT, methods=['POST'])
 def get_message_student():
     json_string = request.stream.read().decode('utf-8')
@@ -27,7 +35,6 @@ def get_message_admin():
     update = telebot.types.Update.de_json(json_string)
     admin_bot.process_new_updates([update])
     return "!", 200
-
 @student_bot.message_handler(commands=['start'])
 def handle_start(message):
     uid = message.from_user.id
@@ -72,7 +79,6 @@ def handle_payment(message, uni_id, password):
     text = f"🔔 طلب تفعيل ومطابقة جديد:\n\n👤 آيدي الطالب: {uid}\n🎓 الرقم الجامعي: {uni_id}\n🔑 الباسورد: {password}\n💵 رقم الحوالة: {receipt}"
     admin_bot.send_message(MY_PERSONAL_ID, text, reply_markup=markup)
     student_bot.send_message(uid, "⏳ تم إرسال بياناتك ورقم العملية بنجاح. يرجى الانتظار لحين مراجعة الحوالة يدوياً من قِبل الإدارة.")
-
 @admin_bot.callback_query_handler(func=lambda call: True)
 def handle_admin_buttons(call):
     parts = call.data.split('_')
@@ -93,7 +99,7 @@ def handle_admin_buttons(call):
             admin_bot.edit_message_text(f"✅ تم قبول الطالب {target_uid} بنجاح وتوثيقه في قاعدة بيانات القناة السحابية.", chat_id=MY_PERSONAL_ID, message_id=call.message.message_id)
             
         except Exception as e:
-            admin_bot.answer_callback_query(call.id, f"❌ خطأ برمي: {str(e)}")
+            admin_bot.answer_callback_query(call.id, f"❌ خطأ برمجي: {str(e)}")
             
     elif action == "den":
         try:
