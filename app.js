@@ -5,15 +5,13 @@ try {
     if (tg.version && parseFloat(tg.version) >= 6.0) {
         tg.disableClosingConfirmation();
     }
-    if (tg.executeCommand) {
-        tg.executeCommand('disable_snapshots');
-    }
 } catch(e) {}
 
 const userTelegramId = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : "123456789";
 
 function generateWatermark() {
     const layer = document.getElementById('wmLayer');
+    if (!layer) return;
     layer.innerHTML = '';
     for(let i=0; i<40; i++) {
         const span = document.createElement('span');
@@ -32,12 +30,23 @@ function submitLoginData() {
         return;
     }
     
-    tg.sendData(`login_${uniId}_${pwd}`);
-    
-    document.getElementById('scr-login').classList.remove('active');
-    document.getElementById('scr-courses').classList.add('active');
-    document.getElementById('appTabBar').style.display = "flex";
-    document.getElementById('appTitle').innerText = "📚 الدورات";
+    fetch('/api/submit-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ telegram_id: userTelegramId, uni_id: uniId, password: pwd })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            document.getElementById('scr-login').classList.remove('active');
+            document.getElementById('scr-courses').classList.add('active');
+            document.getElementById('appTabBar').style.display = "flex";
+            document.getElementById('appTitle').innerText = "📚 الدورات";
+        } else {
+            alert("حدث خطأ أثناء إرسال البيانات.");
+        }
+    })
+    .catch(() => alert("فشل الاتصال بالسيرفر."));
 }
 
 const currentTheme = tg.colorScheme === 'light' ? 'light' : 'dark';
@@ -60,14 +69,18 @@ function calculateTermProgress() {
     const endDate = new Date('2027-02-06');
     const today = new Date();
     
+    const pBar = document.getElementById('pBar');
+    const pDaysText = document.getElementById('pDaysText');
+    if (!pBar || !pDaysText) return;
+
     if (today < startDate) {
-        document.getElementById('pBar').style.width = '0%';
-        document.getElementById('pDaysText').innerText = 'لم يبدأ الفصل الدراسي بعد';
+        pBar.style.width = '0%';
+        pDaysText.innerText = 'لم يبدأ الفصل الدراسي بعد';
         return;
     }
     if (today > endDate) {
-        document.getElementById('pBar').style.width = '100%';
-        document.getElementById('pDaysText').innerText = 'انتهى الفصل الدراسي الحالي';
+        pBar.style.width = '100%';
+        pDaysText.innerText = 'انتهى الفصل الدراسي الحالي';
         return;
     }
     
@@ -78,10 +91,11 @@ function calculateTermProgress() {
     const diffTime = Math.abs(endDate - today);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
-    document.getElementById('pBar').style.width = percentage + '%';
-    document.getElementById('pDaysText').innerText = `متبقي ${diffDays} يوم على نهاية الفصل الحالي`;
+    pBar.style.width = percentage + '%';
+    pDaysText.innerText = `متبقي ${diffDays} يوم على نهاية الفصل الحالي`;
 }
 calculateTermProgress();
+
 const curriculum = [
     {
         year: "السنة الأولى",
@@ -109,9 +123,12 @@ const curriculum = [
         sem2: ["تشريع عقاري", "مشروع التخرج", "التدريب والتأهيل", "نظم المعلومات الجغرافية GIS"]
     }
 ];
+
 function renderStructure() {
     const coursesWrapper = document.getElementById('courses-container');
     const materialsWrapper = document.getElementById('materials-container');
+    
+    if (!coursesWrapper || !materialsWrapper) return;
     
     coursesWrapper.innerHTML = '';
     materialsWrapper.innerHTML = '';
@@ -128,7 +145,7 @@ function renderStructure() {
         block.sem1.forEach((mat) => {
             let isFirstFree = (bIdx === 0 && mat === "ثقافة عربية");
             if(isFirstFree) {
-                htmlBlock += `<div class="material-card unlocked" onclick="viewSecurePdf('${mat}')"><span>${mat}</span><span style="font-size:0.7rem; background:var(--success); color:white; padding:2px 6px; border-radius:4px;">🔓 مجاني</span></div>`;
+                htmlBlock += `<div class="material-card unlocked" onclick="viewSecurePdf('${mat}')"><span>${mat}</span><span style="font-size:0.7rem; background:#10b981; color:white; padding:2px 6px; border-radius:4px;">🔓 مجاني</span></div>`;
             } else {
                 htmlBlock += `<div class="material-card" onclick="openPaymentModal('${mat}')"><span>${mat}</span><span>🔒</span></div>`;
             }
@@ -178,8 +195,10 @@ function switchTab(screenId, headerTitle) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     
-    document.getElementById(`scr-${screenId}`).classList.add('active');
-    document.getElementById(`btn-${screenId}`).classList.add('active');
+    const scr = document.getElementById(`scr-${screenId}`);
+    const btn = document.getElementById(`btn-${screenId}`);
+    if (scr) scr.classList.add('active');
+    if (btn) btn.classList.add('active');
     document.getElementById('appTitle').innerText = headerTitle;
 }
 
@@ -201,9 +220,19 @@ function confirmPaymentRequest() {
         alert("الرجاء إدخال رقم العملية المرجعي للمطابقة!");
         return;
     }
-    tg.sendData(`pay_${selectedMaterialForPayment}_${recVal}`);
-    closePaymentModal();
-    alert("تم إرسال طلب التفعيل المالي إلى الإدارة. يرجى الانتظار.");
+    
+    fetch('/api/submit-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ telegram_id: userTelegramId, material: selectedMaterialForPayment, receipt: recVal })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            closePaymentModal();
+            alert("تم إرسال طلب التفعيل المالي إلى الإدارة عبر إشعار الحوالة. يرجى الانتظار.");
+        }
+    });
 }
 
 function viewSecurePdf(filename) {
@@ -223,31 +252,3 @@ function submitProject() {
     const details = document.getElementById('p-details').value;
     
     if(!year || !name || !deadline) {
-        alert("الرجاء ملء الخانات الأساسية للمشروع المعماري!");
-        return;
-    }
-    tg.sendData(`project_${year}_${name}_${deadline}_${details}`);
-    alert("تم إرسال طلب تدوين خطة المشروع بنجاح للأدمن.");
-}
-
-function submitResearch() {
-    const mat = document.getElementById('r-material').value;
-    const title = document.getElementById('r-title').value;
-    const conds = document.getElementById('r-conditions').value;
-    
-    if(!mat || !title) {
-        alert("الرجاء كتابة اسم المادة وعنوان البحث!");
-        return;
-    }
-    tg.sendData(`research_${mat}_${title}_${conds}`);
-    alert("تم إرسال طلب حجز حلقة البحث بنجاح.");
-}
-
-function downloadCalculatorFile() {
-    tg.sendData("download_gpa_excel");
-    alert("تم إشعار البوت بإرسال ملف calculator.zip الجاهز لك في المحادثة.");
-}
-
-function openExternalGpaSite() {
-    tg.openLink("https://google.com");
-}
