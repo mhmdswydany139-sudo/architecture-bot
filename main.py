@@ -7,6 +7,7 @@ TOKEN_STUDENT = "8753263807:AAFO9rKx7yy4MeQyBbCBLnwkQvPo57v5qyw"
 TOKEN_ADMIN = "8507731905:AAE-ke_vMTR2V3Yz4w3i4kTR7H-yX2JAmmE"
 CHANNEL_ID = "-1002493393930"
 MY_PERSONAL_ID = 2038606299
+WEBHOOK_URL = "https://onrender.com"
 
 student_bot = telebot.TeleBot(TOKEN_STUDENT, threaded=False)
 admin_bot = telebot.TeleBot(TOKEN_ADMIN, threaded=False)
@@ -27,7 +28,7 @@ def home():
 def handle_web_submit():
     data = request.get_json()
     if not data:
-        return jsonify({"success": False, "error": "No data received"}), 400
+        return jsonify({"success": False, "error": "No data"}), 400
     
     uid = int(data.get("telegram_id"))
     uni_id = data.get("uni_id")
@@ -44,7 +45,6 @@ def handle_web_submit():
     
     try:
         admin_bot.send_message(MY_PERSONAL_ID, text, reply_markup=markup)
-        student_bot.send_message(uid, "⏳ تم إرسال بياناتك بنجاح وجاري مطابقتها من قِبل الإدارة وتخزين حسابك. يرجى الانتظار.")
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
@@ -69,14 +69,6 @@ def handle_start(message):
     if uid in approved_users:
         show_approved_menu(uid)
         return
-    try:
-        status = student_bot.get_chat_member(CHANNEL_ID, uid).status
-        if status in ['member', 'administrator', 'creator']:
-            approved_users.add(uid)
-            show_approved_menu(uid)
-            return
-    except:
-        pass
     student_bot.send_message(uid, "🔒 مرحباً بك في موسوعة العمارة.\nالمحتوى مقفل حالياً؛ الرجاء الضغط على زر القائمة بالأسفل (🌐 فتح الموسوعة المعمارية) لإرسال بياناتك الأكاديمية وطلب التفعيل من الإدارة أولاً.")
 
 @admin_bot.callback_query_handler(func=lambda call: call.data.startswith("auth_"))
@@ -126,11 +118,7 @@ def handle_approved_navigation(call):
         markup.add(btn_back)
         student_bot.edit_message_text("📂 Free Sections active.", chat_id=uid, message_id=call.message.message_id, reply_markup=markup)
     elif call.data == "app_gpa":
-        try:
-            with open("calculator.zip", "rb") as file:
-                student_bot.send_document(uid, file)
-        except:
-            student_bot.send_message(uid, "Error: File not found.")
+        student_bot.send_message(uid, "GPA Calculator section")
     elif call.data == "app_paid":
         student_bot.send_message(uid, "Premium Section Locked.")
 
@@ -141,5 +129,12 @@ def handle_back_btn(call):
     show_approved_menu(uid)
 
 if __name__ == "__main__":
+    try:
+        student_bot.remove_webhook()
+        admin_bot.remove_webhook()
+        student_bot.set_webhook(url=f"{WEBHOOK_URL}/{TOKEN_STUDENT}")
+        admin_bot.set_webhook(url=f"{WEBHOOK_URL}/{TOKEN_ADMIN}")
+    except:
+        pass
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
